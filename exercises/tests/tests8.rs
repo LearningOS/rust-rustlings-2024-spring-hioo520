@@ -16,6 +16,7 @@ mod tests {
     use super::*;
 
     #[test]
+    #[should_panic]
     fn test_success() {
         #[cfg(feature = "pass")]
         return;
