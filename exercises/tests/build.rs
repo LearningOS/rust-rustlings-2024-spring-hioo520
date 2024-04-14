@@ -11,7 +11,7 @@ fn main() {
         .unwrap()
         .as_secs(); // What's the use of this timestamp here?
     let your_command = format!( 
-        "cargo run --TEST_FOO={}",
+        "TEST_FOO={} cargo run",
         timestamp
     );
     println!("cargo:{}", your_command);
