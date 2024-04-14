@@ -5,5 +5,3 @@ edition = "2021"
 [[bin]]
 name = "tests7"
 path = "tests7.rs"
-[features]
-pass = []
