@@ -2,7 +2,7 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -14,7 +14,7 @@ struct Node<T> {
     next: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Node<T> {
+impl<T:Ord+PartialEq+Debug+Clone> Node<T> {
     fn new(t: T) -> Node<T> {
         Node {
             val: t,
@@ -29,7 +29,7 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T:Ord+PartialEq+Debug+Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
@@ -60,24 +60,26 @@ impl<T> LinkedList<T> {
         self.get_ith_node(self.start, index)
     }
 
-    fn get_ith_node(&mut self, node: Option<NonNull<Node<T>>>, index: i32) -> Option<&T> {
+    fn get_ith_node<'a>(&'a mut self, node: Option<NonNull<Node<T>>>, mut container: Vec<&'a T>) -> Option<&'a T> {
         match node {
-            None => None,
-            Some(next_ptr) => match index {
-                0 => Some(unsafe { &(*next_ptr.as_ptr()).val }),
-                _ => self.get_ith_node(unsafe { (*next_ptr.as_ptr()).next }, index - 1),
+            None => container,
+            Some(next_ptr) =>  {
+               container.push(unsafe { &(*next_ptr.as_ptr()).val });
+               self.get_ith_node(unsafe { (*next_ptr.as_ptr()).next }, container)
             },
         }
     }
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
 	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
-        }
-	}
+		 let a = list_a.get_ith_node(list_a.start,Vec::new());
+        let mut b = list_a.get_ith_node(list_a.start,a);
+        let mut newList = LinkedList::<T>::new();
+        b.sort()
+        b.into_iter()。 
+。for_echo(|f|{
+            newList.add(f.to_owned())
+        })
+    }
 }
 
 impl<T> Display for LinkedList<T>
