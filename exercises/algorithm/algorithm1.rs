@@ -4,9 +4,10 @@
 */
 
 
-use std::fmt::{self, Display, Formatter};
+use std::fmt::{self, Display, Formatter,Debug};
 use std::ptr::NonNull;
 use std::vec::*;
+
 
 #[derive(Debug)]
 struct Node<T> {
@@ -14,7 +15,7 @@ struct Node<T> {
     next: Option<NonNull<Node<T>>>,
 }
 
-impl<T:Ord+PartialEq+Debug+Clone> Node<T> {
+impl<T> Node<T> {
     fn new(t: T) -> Node<T> {
         Node {
             val: t,
@@ -35,7 +36,7 @@ impl<T:Ord+PartialEq+Debug+Clone> Default for LinkedList<T> {
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T:Ord+PartialEq+Debug+Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -59,29 +60,37 @@ impl<T> LinkedList<T> {
     pub fn get(&mut self, index: i32) -> Option<&T> {
         self.get_ith_node(self.start, index)
     }
-
-    fn get_ith_node<'a>(&'a mut self, node: Option<NonNull<Node<T>>>, mut container: Vec<&'a T>) -> Option<&'a T> {
+    fn get_ith_node(&mut self, node: Option<NonNull<Node<T>>>, index: i32) -> Option<&T> {
         match node {
-            None => container,
-            Some(next_ptr) =>  {
-               container.push(unsafe { &(*next_ptr.as_ptr()).val });
-               self.get_ith_node(unsafe { (*next_ptr.as_ptr()).next }, container)
+            None => None,
+            Some(next_ptr) => match index {
+                0 => Some(unsafe { &(*next_ptr.as_ptr()).val }),
+                _ => self.get_ith_node(unsafe { (*next_ptr.as_ptr()).next }, index - 1),
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		 let a = list_a.get_ith_node(list_a.start,Vec::new());
-        let mut b = list_a.get_ith_node(list_a.start,a);
-        let mut newList = LinkedList::<T>::new();
-        b.sort()
-        b.into_iter()。 
-。for_echo(|f|{
-            newList.add(f.to_owned())
-        })
-    }
-}
 
+    fn get_all_val<'a>(&'a mut self, node: Option<NonNull<Node<T>>>, mut container: Vec<&'a T>) -> Vec<&'a T> {
+        match node {
+            None => container,
+            Some(next_ptr) =>  { 
+               container.push(unsafe { &(*next_ptr.as_ptr()).val });
+               self.get_all_val(unsafe { (*next_ptr.as_ptr()).next }, container)
+            },
+        }
+    }
+	pub fn merge(mut list_a:LinkedList<T>,mut list_b:LinkedList<T>) -> Self{
+		let a = list_a.get_all_val(list_a.start,Vec::new());
+        let mut b = list_b.get_all_val(list_b.start,a);
+        let mut newList = LinkedList::<T>::new();
+        b.sort();
+        b.into_iter().for_each(|f|{
+            newList.add(f.to_owned())
+        });
+        newList
+    }
+ 
+}
 impl<T> Display for LinkedList<T>
 where
     T: Display,
