@@ -2,11 +2,12 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
-use std::fmt::{self, Display, Formatter};
+
+use std::fmt::{self, Display, Formatter,Debug};
 use std::ptr::NonNull;
 use std::vec::*;
+
 
 #[derive(Debug)]
 struct Node<T> {
@@ -29,13 +30,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T:Ord+PartialEq+Debug+Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T:Ord+PartialEq+Debug+Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -59,7 +60,6 @@ impl<T> LinkedList<T> {
     pub fn get(&mut self, index: i32) -> Option<&T> {
         self.get_ith_node(self.start, index)
     }
-
     fn get_ith_node(&mut self, node: Option<NonNull<Node<T>>>, index: i32) -> Option<&T> {
         match node {
             None => None,
@@ -69,17 +69,28 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
-        }
-	}
-}
 
+    fn get_all_val<'a>(&'a mut self, node: Option<NonNull<Node<T>>>, mut container: Vec<&'a T>) -> Vec<&'a T> {
+        match node {
+            None => container,
+            Some(next_ptr) =>  { 
+               container.push(unsafe { &(*next_ptr.as_ptr()).val });
+               self.get_all_val(unsafe { (*next_ptr.as_ptr()).next }, container)
+            },
+        }
+    }
+	pub fn merge(mut list_a:LinkedList<T>,mut list_b:LinkedList<T>) -> Self{
+		let a = list_a.get_all_val(list_a.start,Vec::new());
+        let mut b = list_b.get_all_val(list_b.start,a);
+        let mut newList = LinkedList::<T>::new();
+        b.sort();
+        b.into_iter().for_each(|f|{
+            newList.add(f.to_owned())
+        });
+        newList
+    }
+ 
+}
 impl<T> Display for LinkedList<T>
 where
     T: Display,
