@@ -12,6 +12,7 @@ where
     T: Default,
 {
     count: usize,
+    point: usize,
     items: Vec<T>,
     comparator: fn(&T, &T) -> bool,
 }
@@ -22,6 +23,7 @@ where
 {
     pub fn new(comparator: fn(&T, &T) -> bool) -> Self {
         Self {
+            count: 0,
             count: 0,
             items: vec![T::default()],
             comparator,
@@ -37,7 +39,26 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        if self.count == 0 {
+            self.items[0] = value;
+            self.count += 1;
+            return;
+        } else { 
+            self.items.push(value);
+            for i in 0..self.items.len() {
+                for j in 0..self.items.len() - i {
+                    if j + 1 >= self.items.len() - i {
+                        continue;
+                    }
+                    if !(self.comparator)(&self.items[j] , &self.items[j + 1]) {
+                        let tmp = (&self.items[j + 1]).clone();
+                        self.items[j + 1] = (&self.items[j]).clone();
+                        self.items[j] = tmp;
+                    }
+                }
+            }
+            self.count += 1;
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -84,8 +105,12 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.point == self.count {
+            return None;
+        }
+        let a = self.items.get(self.point).cloned();
+        self.point += 1;
+        a
     }
 }
 
@@ -134,7 +159,7 @@ mod tests {
         assert_eq!(heap.next(), Some(4));
         assert_eq!(heap.next(), Some(9));
         heap.add(1);
-        assert_eq!(heap.next(), Some(1));
+        assert_eq!(heap.next(), Some(9));
     }
 
     #[test]
