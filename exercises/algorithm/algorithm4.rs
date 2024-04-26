@@ -11,7 +11,7 @@ use std::fmt::Debug;
 #[derive(Debug)]
 struct TreeNode<T>
 where
-    T: Ord,
+    T: Ord + Copy,
 {
     value: T,
     left: Option<Box<TreeNode<T>>>,
@@ -21,14 +21,14 @@ where
 #[derive(Debug)]
 struct BinarySearchTree<T>
 where
-    T: Ord,
+    T: Ord + Copy,
 {
     root: Option<Box<TreeNode<T>>>,
 }
 
 impl<T> TreeNode<T>
 where
-    T: Ord,
+    T: Ord + Copy,
 {
     fn new(value: T) -> Self {
         TreeNode {
@@ -41,32 +41,78 @@ where
 
 impl<T> BinarySearchTree<T>
 where
-    T: Ord,
+    T: Ord + Copy,
 {
-
     fn new() -> Self {
         BinarySearchTree { root: None }
     }
 
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
-        //TODO
+        if self.search(value) {
+            return;
+        }
+        if let Some(b_node) = &mut self.root {
+            b_node.insert(value)
+        } else {
+            self.root = Some(Box::new(TreeNode::<T>::new(value)));
+        }
     }
-
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
-        //TODO
-        true
+        if let Some(node) = &self.root {
+            if node.value == value {
+                return true;
+            } else if node.value > value {
+                // 左子树找
+                return node.search(value);
+            } else {
+                // 右子树找
+                return node.search(value);
+            }
+        }
+        false
     }
 }
 
 impl<T> TreeNode<T>
 where
-    T: Ord,
+    T: Ord + Copy,
 {
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
-        //TODO
+        if self.value > value {
+            // 往左插
+            if let Some(a) = &mut self.left {
+                a.insert(value)
+            } else {
+                self.left = Some(Box::new(TreeNode::<T>::new(value)));
+            }
+        } else {
+            // 往右插
+            if let Some(a) = &mut self.right {
+                a.insert(value)
+            } else {
+                self.right = Some(Box::new(TreeNode::<T>::new(value)));
+            }
+        }
+    }
+    fn search(&self, value: T) -> bool {
+        if self.value == value {
+            return true;
+        } else if self.value > value {
+            // 左子树找
+            if let Some(node) = &self.left {
+                return node.search(value);
+            }
+            false
+        } else {
+            // 右子树找
+            if let Some(node) = &self.right {
+                return node.search(value);
+            }
+            false
+        }
     }
 }
 
