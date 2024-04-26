@@ -27,11 +27,32 @@ impl Graph {
 
     // Perform a breadth-first search on the graph, return the order of visited nodes
     fn bfs_with_return(&self, start: usize) -> Vec<usize> {
-        
-		//TODO
-
         let mut visit_order = vec![];
+        if !visit_order.contains(&start) {
+            visit_order.push(start)
+        }
+
+        for ele in &self.adj[start] {
+            if !visit_order.contains(ele) {
+                visit_order.push(*ele)
+            }
+        }
+        self.visit_order(&mut visit_order, 0);
         visit_order
+    }
+    fn visit_order(&self, visit_order: &mut Vec<usize>, start: usize) {
+        for index in start..visit_order.len() {
+            for ele in &self.adj[visit_order[index]] {
+                if !visit_order.contains(ele) {
+                    visit_order.push(*ele)
+                }
+            }
+        }
+        let new_len = visit_order.len() - start;
+        if new_len == 0 {
+            return;
+        }
+        self.visit_order(visit_order, new_len);
     }
 }
 
