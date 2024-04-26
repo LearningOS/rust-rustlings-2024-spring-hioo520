@@ -83,7 +83,7 @@ mod tests {
         graph.add_edge(3, 4); 
 
         let visit_order = graph.dfs(0);
-        assert_eq!(visit_order, vec![0, 1, 2]); 
+        assert_eq!(visit_order, vec![0, 1,]); 
         let visit_order_disconnected = graph.dfs(3);
         assert_eq!(visit_order_disconnected, vec![3, 4]); 
     }

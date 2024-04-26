@@ -2,7 +2,7 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
+
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -19,12 +19,12 @@ where
 
 impl<T> Heap<T>
 where
-    T: Default,
+    T: Default+Clone,
 {
     pub fn new(comparator: fn(&T, &T) -> bool) -> Self {
         Self {
             count: 0,
-            count: 0,
+            point: 0,
             items: vec![T::default()],
             comparator,
         }
@@ -51,7 +51,7 @@ where
                         continue;
                     }
                     if !(self.comparator)(&self.items[j] , &self.items[j + 1]) {
-                        let tmp = (&self.items[j + 1]).clone();
+                        let tmp = (self.items[j + 1]).clone();
                         self.items[j + 1] = (&self.items[j]).clone();
                         self.items[j] = tmp;
                     }
@@ -85,7 +85,7 @@ where
 
 impl<T> Heap<T>
 where
-    T: Default + Ord,
+    T: Default + Ord+Clone,
 {
     /// Create a new MinHeap
     pub fn new_min() -> Self {
@@ -100,7 +100,7 @@ where
 
 impl<T> Iterator for Heap<T>
 where
-    T: Default,
+    T: Default+Clone,
 {
     type Item = T;
 
@@ -120,7 +120,7 @@ impl MinHeap {
     #[allow(clippy::new_ret_no_self)]
     pub fn new<T>() -> Heap<T>
     where
-        T: Default + Ord,
+        T: Default + Ord+Clone,
     {
         Heap::new(|a, b| a < b)
     }
@@ -132,7 +132,7 @@ impl MaxHeap {
     #[allow(clippy::new_ret_no_self)]
     pub fn new<T>() -> Heap<T>
     where
-        T: Default + Ord,
+        T: Default + Ord+Clone,
     {
         Heap::new(|a, b| a > b)
     }
