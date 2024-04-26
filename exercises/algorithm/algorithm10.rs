@@ -29,7 +29,24 @@ impl Graph for UndirectedGraph {
         &self.adjacency_table
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
+        let (from, to, weight) = edge;
+        let map = self.adjacency_table_mutable();
+        if !map.contains_key(from) && !map.contains_key(to) {
+            self.adjacency_table_mutable()
+                .insert(from.to_string(), vec![(to.to_string(), weight)]);
+            self.adjacency_table_mutable()
+                .insert(to.to_string(), vec![(from.to_string(), weight)]);
+        } else {
+            if (map.contains_key(from)) {
+                let arr = map.get_mut(from).unwrap();
+                arr.push((to.to_string(),weight));
+                if (map.contains_key(to)){
+                    let arr = map.get_mut(to).unwrap();
+                    arr.push((from.to_string(),weight));
+                }else {
+                    map.insert(to.to_string(), vec![(from.to_string(), weight)]);
+                }
+            }
     }
 }
 pub trait Graph {
